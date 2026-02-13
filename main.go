@@ -1,31 +1,31 @@
 package main
 
 import (
-	"gin-quickstart/controllers"
+	"gin-quickstart/db"
+	"gin-quickstart/models"
 	"gin-quickstart/routes"
 
 	"github.com/gin-gonic/gin"
 )
 
-type Request struct {
-	Name string `json:"name"`
-}
-
 func main() {
-	router := gin.Default()
-	router.GET("/User", func(c *gin.Context) {
 
-		if len(controllers.AccStore) == 0 {
-			c.JSON(404, gin.H{
-				"error": "user not found",
-			})
+	db.ConnectDB()
+
+	router := gin.Default()
+
+	router.GET("/users", func(c *gin.Context) {
+
+		var users []models.User
+
+		result := db.DB.Find(&users)
+
+		if result.Error != nil {
+			c.JSON(500, gin.H{"error": result.Error.Error()})
 			return
 		}
 
-		c.JSON(200, gin.H{
-			"message": "success",
-			"user":    controllers.AccStore,
-		})
+		c.JSON(200, users)
 	})
 
 	routes.SetupRoutes(router)
