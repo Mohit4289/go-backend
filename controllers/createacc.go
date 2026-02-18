@@ -34,6 +34,12 @@ func CreateAcc(c *gin.Context) {
 		return
 	}
 
+	var existingEmail models.User
+	if exist := db.DB.Where("email = ?", req.Email).First(&existingEmail).Error; exist == nil {
+		c.JSON(400, gin.H{"error": "email already exists"})
+		return
+	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "failed to hash password"})
