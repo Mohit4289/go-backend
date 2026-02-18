@@ -1,55 +1,46 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"gin-quickstart/db"
+	"gin-quickstart/models"
+
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
+)
 
 type LoginRequest struct {
-	Email    string `json:"email"`
+	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
 func LoginAcc(c *gin.Context) {
+
 	var req LoginRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{
-			"error": "invalid json",
-		})
+		c.JSON(400, gin.H{"error": "invalid json"})
 		return
 	}
 
-	if req.Email == "" || req.Password == "" {
-		c.JSON(400, gin.H{
-			"error": "email and password are required",
-		})
+	if req.Username == "" || req.Password == "" {
+		c.JSON(400, gin.H{"error": "username and password are required"})
 		return
 	}
 
-	// Check if email exists in AccStore
-	var foundUser *CreateAccRequest
-	for _, user := range AccStore {
-		if user.Email == req.Email {
-			foundUser = &user
-			break
-		}
-	}
-
-	if foundUser == nil {
-		c.JSON(404, gin.H{
-			"error": "user not found",
-		})
+	user := models.User{}
+	if err := db.DB.Where("username = ?", req.Username).First(&user).Error; err != nil {
+		c.JSON(400, gin.H{"error": "user not found"})
 		return
 	}
 
-	if foundUser.Password != req.Password {
-		c.JSON(401, gin.H{
-			"error": "invalid password",
-		})
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
+		c.JSON(400, gin.H{"error": "invalid password"})
 		return
 	}
 
 	c.JSON(200, gin.H{
-		"message":  "login successful",
-		"username": foundUser.Username,
-		"email":    foundUser.Email,
+		"message":  "success",
+		"username": user.Username,
+		"email":    user.Email,
 	})
 }
