@@ -12,6 +12,10 @@ func main() {
 
 	db.ConnectDB()
 
+	// Auto-migrate the database schema
+	db.DB.AutoMigrate(&models.User{})
+	db.DB.AutoMigrate(&models.Todo{})
+
 	router := gin.Default()
 
 	router.GET("/users", func(c *gin.Context) {
