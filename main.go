@@ -29,6 +29,7 @@ func main() {
 	})
 
 	routes.SetupRoutes(router)
+	routes.SetupTodoRoutes(router)
 
 	router.Run(":8080")
 }

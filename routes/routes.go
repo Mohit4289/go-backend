@@ -9,4 +9,5 @@ import (
 func SetupRoutes(r *gin.Engine) {
 	r.POST("/createacc", controllers.CreateAcc)
 	r.POST("/loginacc", controllers.LoginAcc)
+
 }

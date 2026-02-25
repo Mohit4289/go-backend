@@ -6,6 +6,7 @@ import (
 	"gin-quickstart/services"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -46,7 +47,10 @@ func CreateAcc(c *gin.Context) {
 		return
 	}
 
+	userID := uuid.New()
+
 	User := models.User{
+		ID:       userID,
 		Username: req.Username,
 		Email:    req.Email,
 		Password: string(hashedPassword),
