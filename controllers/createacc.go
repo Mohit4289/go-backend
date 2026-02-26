@@ -3,29 +3,26 @@ package controllers
 import (
 	"gin-quickstart/db"
 	"gin-quickstart/models"
-	"gin-quickstart/services"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
+var validate = validator.New()
+
 type CreateAccRequest struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Username string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=6"`
 }
 
 func CreateAcc(c *gin.Context) {
 	var req CreateAccRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": "invalid json"})
-		return
-	}
-
-	if !services.EmailValid(req.Email) {
-		c.JSON(400, gin.H{"error": "invalid email"})
+		c.JSON(400, gin.H{"error": "invalid json or format is wrong"})
 		return
 	}
 
