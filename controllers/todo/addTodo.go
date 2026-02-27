@@ -10,6 +10,7 @@ import (
 
 type AddTodoRequest struct {
 	Text   string `json:"text"`
+	Status string `json:"status"`
 	UserID string `json:"user_id"`
 }
 

@@ -12,6 +12,7 @@ type User struct {
 type Todo struct {
 	ID     uint      `gorm:"primaryKey"`
 	Text   string    `gorm:"not null"`
+	Status string    `gorm:"not null;default:'pending'"`
 	UserID uuid.UUID `gorm:"type:uuid;not null"`
 }
 
